@@ -1,0 +1,21 @@
+version: '3'
+services:
+    neo4j:
+        image: neo4j:4.1.1
+        ports:
+            - "7474:7474" 
+            - "7687:7687"
+        volumes:
+            - ./backend/neo4j/plugins:/plugins
+        environment:
+            NEO4J_AUTH: neo4j/test
+
+    frontend:
+        build: .
+        ports:
+            - "8080:8080"
+    
+    backend:
+        build: ./backend
+        ports:
+            - "3000:3000"

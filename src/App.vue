@@ -1,26 +1,50 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <tree :tree-data="tree" :selectedNodes="selectedNode" />
+    <sidebar
+      v-on:closeSidebar="hideSidebar"
+      :name="name"
+      :description="description"
+      :is-hidden="isHidden"
+    />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Tree from "./Tree.vue";
+import Sidebar from "./Sidebar.vue";
 
 export default {
-  name: 'App',
+  data: () => ({
+    tree: {},
+    name: "testName",
+    description: "testDescription",
+    selectNode: "",
+    isHidden: true,
+  }),
   components: {
-    HelloWorld
-  }
-}
+    Tree,
+    Sidebar,
+  },
+  async created() {
+    const response = await fetch("http://localhost:3000");
+    const body = await response.json();
+    const tree = JSON.parse(body);
+    this.isHidden = false;
+  },
+  mounted() {
+    this.$root.$on("node clicked", (name, description) => {
+      this.name = name;
+      this.description = description;
+      this.selectNode = name;
+      this.isHidden = false;
+    });
+  },
+  methods: {
+    hideSidebar() {
+      this.isHidden = false;
+      this.selectNode = "";
+    },
+  },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
